@@ -1,25 +1,39 @@
-import { Button, Text, View, Pressable, StyleSheet, TextInput, ScrollView, KeyboardAvoidingView, Dimensions, Alert, ToastAndroid } from 'react-native';
+import { Component } from 'react';
+import { Alert, KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
-import { useState, useEffect, Component } from 'react';
-import * as NavigationBar from 'expo-navigation-bar';
 
 export default class Login extends Component {
+    constructor(props: {}) {
+        //Allows you to set initial state of the application/class/component before methods are called.
+
+      super(props) //Allows you access to props from main class/inherited class
+
+      this.handleOnPress = this.handleOnPress.bind(this)
+      //Recommended: bcs it does not create a new instance of the function
+
+      this.state = {
+        email:'',
+        password:''
+      }
+    }
 //   const [firstName, setFirstName] = useState('')
   
 //   useEffect(() => {
 //     console.log(firstName);
 //   }, [firstName])
-//   const handleOnPress = () => {
-//     Alert.alert('Alert', 'Button was pressed', [
-//       { text: 'Okay', onPress: () => console.log('Okay was pressed') },
-//       { text: 'Cancel', style: 'cancel', onPress: () => console.log('Cancel was pressed') },
-//       { text: 'Delete', style: 'destructive', onPress: () => console.log('Delete was pressed') }
-//     ])
-//   }
-//   const handleOnLongPress = () => {
-//     ToastAndroid.show('Button was long pressed...', 3000)
-//   }
+  handleOnPress = () => {
+    Alert.alert('Alert', 'Button was pressed', [
+      { text: 'Okay', onPress: () => console.log('Okay was pressed') },
+      { text: 'Cancel', style: 'cancel', onPress: () => console.log('Cancel was pressed') },
+      { text: 'Delete', style: 'destructive', onPress: () => console.log('Delete was pressed') }
+    ])
+  }
+  handleOnLongPress = () => {
+    ToastAndroid.show('Button was long pressed...', 3000)
+  }
+    handleShowAlert = () => {
+  ToastAndroid.show("Tried to navigate the Registration", 300);
+};
 render (){
   return (
     <SafeAreaView style={styles.container}>
@@ -33,7 +47,7 @@ render (){
               placeholder="Email"
               style={styles.input}
               placeholderTextColor={'#717171'}
-              onChangeText={(text) => { console.log(text) }}
+              onChangeText={(text) => {this.setState({email: text}) }}
             />
           </View>
           <View style={styles.inputContainer}>
@@ -42,8 +56,17 @@ render (){
               placeholder="Password"
               style={styles.input}
               placeholderTextColor={'#717171'}
-              onChangeText={(text) => { console.log(text) }}
+              onChangeText={(text) => { this.setState({password: text}) }}
             />
+          </View>
+          <Pressable style={styles.button} onPress={this.handleOnPress} onLongPress={this.handleOnLongPress}>
+            <Text style={styles.buttonText}>Submit</Text>
+          </Pressable>
+          <View style={styles.signInSection}>
+            <Text style={{ color: '#BDBDDB' }}>Don't have an account? </Text>
+            <Pressable onPress={this.handleShowAlert}>
+              <Text style={{ color: '#306A68', padding: 5, }}>Sign Up</Text>
+            </Pressable>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -82,5 +105,25 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#717171',
     fontSize: 16,
+  },
+  button: {
+    backgroundColor: '#306A68',
+    padding: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  signInSection: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 20,
   },
 });

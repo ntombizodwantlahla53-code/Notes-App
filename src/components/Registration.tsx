@@ -52,6 +52,7 @@ export default function Registration() {
               onChangeText={(text) => { console.log(text) }}
             />
           </View>
+          
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
