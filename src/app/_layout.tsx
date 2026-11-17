@@ -7,10 +7,11 @@ import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect } from 'react';
 import * as NavigationBar from 'expo-navigation-bar';
 import Registration from '@/components/Registration';
-
+import Login from '@/components/LoginClass';
 
 export default function TabLayout() {
   return (
-    <Registration/>
+    // <Registration/>
+    <Login/>
   );
 }
