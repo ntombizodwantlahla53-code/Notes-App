@@ -16,7 +16,24 @@ export default class Login extends Component {
         password:''
       }
     }
-//   const [firstName, setFirstName] = useState('')
+
+    //1. componentDidMount :when the component is added to the view/DOM
+    //3.componentDidUpdate: when component state/props are updated
+    //3. componentDidUnmount: when the component will be removed from view/DOM
+componentDidUpdate(){
+  console.log({state: this.state});
+}
+componentDidMount(){
+  console.log('is mounted');
+  //this is where you add event listeners, or subscriptions
+  //or set the state of the component
+  //or fetch date from APIs and datebases
+}
+componentDidUnmount(){
+  console.log('will be unmounted');
+  //component distraction: example removing any event listeners that you have, or subscrictions to real time APIs
+}
+    //   const [firstName, setFirstName] = useState('')
   
 //   useEffect(() => {
 //     console.log(firstName);

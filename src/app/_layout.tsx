@@ -11,7 +11,7 @@ import Login from '@/components/LoginClass';
 
 export default function TabLayout() {
   return (
-    // <Registration/>
-    <Login/>
+    <Registration/>
+    // <Login/>
   );
 }
