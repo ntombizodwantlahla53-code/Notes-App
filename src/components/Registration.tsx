@@ -1,14 +1,15 @@
-import { Button, Text, View, Pressable, StyleSheet, TextInput, ScrollView, KeyboardAvoidingView, Dimensions, Alert, ToastAndroid } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Alert, KeyboardAvoidingView, ScrollView, StyleSheet, Text, ToastAndroid, Pressable, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StatusBar } from 'expo-status-bar';
-import { useState, useEffect } from 'react';
-import * as NavigationBar from 'expo-navigation-bar';
-import CustomInput from '../../CustomInput';
+import CustomInput from './CustomInput';
+import { validateInput, ValidationResult } from '@/utils/input.validation';
 
 export default function Registration() {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+const [errors, setErrors] = useState<{ [key: string]: ValidationResult | undefined }>({});
+
   
   useEffect(() => {
     console.log(username);
@@ -23,16 +24,49 @@ export default function Registration() {
   const handleOnLongPress = () => {
     ToastAndroid.show('Button was long pressed...', 3000)
   }
+  const handleInput = (type: string, stateName: string, value: string) => {
+  setErrors(prevErrors => ({
+    ...prevErrors,
+    [stateName]: validateInput(type, value)
+  }));
+};
+const handleShowAlert = () => {
+  ToastAndroid.show("Tried to navigate the Registration", 300);
+};
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView style={{flex: 1}} behavior="position">
         <ScrollView contentContainerStyle={styles.scrollView}>
           <Text style={styles.formTitle}>Register</Text>
           
-          <CustomInput name={'User Name'} onChange={setUsername}/>
-          <CustomInput name={'Email'} onChange={setEmail}/>
-          <CustomInput name={'Password'} onChange={setPassword}/>
-          
+          <CustomInput 
+          name={'User Name'} 
+          onChange={setUsername}
+          onBlur={() => handleInput('string', 'username', username)}
+            error={errors ?.username?.error}/>
+
+          <CustomInput 
+          name={'Email'} 
+          onChange={setEmail}
+          onBlur={() => handleInput('string', 'email', email)}
+            error={errors ?.email?.error}/>
+
+          <CustomInput 
+          name={'Password'} 
+          onChange={setPassword}
+          onBlur={() => handleInput('string', 'password', password)}
+            error={errors ?.password?.error}/>
+
+          <Pressable style={styles.button} onPress={() => handleOnPress()} onLongPress={() => handleOnLongPress()}>
+  <Text style={styles.buttonText}>Register</Text>
+</Pressable>
+<View style={styles.signinSection}>
+  <Text style={{ color: '#000000' }}>Already have an account?</Text>
+  <Pressable onPress={() => handleShowAlert()}>
+    <Text style={{ color: '#1b6be8', padding: 5 }}>Sign In</Text>
+  </Pressable>
+</View>
+
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -69,5 +103,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#717171',
     fontSize: 16,
+  },
+    button: {
+    backgroundColor: '#1b6be8',
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  signinSection: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 15,
   },
 });

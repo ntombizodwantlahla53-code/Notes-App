@@ -1,9 +1,23 @@
 import { Component } from 'react';
 import { Alert, KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import CustomInput from '../../CustomInput';
+import CustomInput from './CustomInput';
+import { validateInput } from '@/utils/input.validation';
 
-export default class Login extends Component {
+interface ValidationResult {
+  valid: boolean;
+  error: string | null;
+}
+
+interface LoginState {
+  email: string;
+  password: string;
+  errors: {
+    [key: string]: ValidationResult | undefined;
+  };
+}
+
+export default class Login extends Component<{}, LoginState> {
     constructor(props: {}) {
         //Allows you to set initial state of the application/class/component before methods are called.
 
@@ -13,8 +27,9 @@ export default class Login extends Component {
       //Recommended: bcs it does not create a new instance of the function
 
       this.state = {
-        email:'',
-        password:''
+        email: '',
+        password: '',
+        errors: {}
       }
     }
 
@@ -52,6 +67,17 @@ componentDidUnmount(){
     handleShowAlert = () => {
   ToastAndroid.show("Tried to navigate the Registration", 300);
 };
+  handleInput = (type: string, stateName: string, value: string) => {
+    this.setState(state => ({
+      ...state,
+      errors: {
+        ...state.errors,
+        [stateName]: validateInput(type, value)
+      }
+    }))
+  }
+  
+
 render (){
   return (
     <SafeAreaView style={styles.container}>
@@ -60,26 +86,8 @@ render (){
           <Text style={styles.formTitle}>Login</Text>
 
           <CustomInput name={'Email'} onChange={(ev: string) => this.setState({ email: ev })}/>
-            <CustomInput name={'Password'} onChange={(ev: string) => this.setState({ password: ev })}/>
+          <CustomInput name={'Password'} onChange={(ev: string) => this.setState({ password: ev })}/>
 
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              placeholder="Email"
-              style={styles.input}
-              placeholderTextColor={'#717171'}
-              onChangeText={(text) => {this.setState({email: text}) }}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              placeholder="Password"
-              style={styles.input}
-              placeholderTextColor={'#717171'}
-              onChangeText={(text) => { this.setState({password: text}) }}
-            />
-          </View>
           <Pressable style={styles.button} onPress={this.handleOnPress} onLongPress={this.handleOnLongPress}>
             <Text style={styles.buttonText}>Submit</Text>
           </Pressable>

@@ -8,10 +8,12 @@ import { useState, useEffect } from 'react';
 import * as NavigationBar from 'expo-navigation-bar';
 import Registration from '@/components/Registration';
 import Login from '@/components/LoginClass';
+import CounterClass from '@/components/CounterClass';
 
 export default function TabLayout() {
   return (
     <Registration/>
     // <Login/>
+    // <CounterClass/>
   );
 }
