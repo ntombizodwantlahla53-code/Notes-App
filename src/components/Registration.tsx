@@ -3,6 +3,7 @@ import { Alert, KeyboardAvoidingView, ScrollView, StyleSheet, Text, ToastAndroid
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomInput from './CustomInput';
 import { validateInput, ValidationResult } from '@/utils/input.validation';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function Registration() {
   const [username, setUsername] = useState('')
@@ -21,9 +22,15 @@ const [errors, setErrors] = useState<{ [key: string]: ValidationResult | undefin
       { text: 'Delete', style: 'destructive', onPress: () => console.log('Delete was pressed') }
     ])
   }
-  const handleOnLongPress = () => {
-    ToastAndroid.show('Button was long pressed...', 3000)
+  const handleOnSubmit = async() => {
+    await AsyncStorage.setItem('reg', JSON.stringify({ username, email, password}))
   }
+    const handleOnGetData = async () => {
+    const rawData = await AsyncStorage.getItem('reg');
+    const data = rawData ? JSON.parse(rawData) : null;
+    console.log({ data });
+  };
+
   const handleInput = (type: string, stateName: string, value: string) => {
   setErrors(prevErrors => ({
     ...prevErrors,
@@ -57,8 +64,11 @@ const handleShowAlert = () => {
           onBlur={() => handleInput('string', 'password', password)}
             error={errors ?.password?.error}/>
 
-          <Pressable style={styles.button} onPress={() => handleOnPress()} onLongPress={() => handleOnLongPress()}>
-  <Text style={styles.buttonText}>Register</Text>
+          <Pressable style={styles.button} onPress={() => handleOnSubmit()}>
+  <Text style={styles.buttonText}>Submit</Text>
+</Pressable>
+<Pressable style={styles.button} onPress={() => handleOnGetData()}>
+  <Text style={styles.buttonText}>Get data</Text>
 </Pressable>
 <View style={styles.signinSection}>
   <Text style={{ color: '#000000' }}>Already have an account?</Text>
