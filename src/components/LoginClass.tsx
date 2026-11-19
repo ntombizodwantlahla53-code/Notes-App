@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { Alert, KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, Text, TextInput, ToastAndroid, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import CustomInput from '../../CustomInput';
 
 export default class Login extends Component {
     constructor(props: {}) {
@@ -57,7 +58,10 @@ render (){
       <KeyboardAvoidingView style={{flex: 1}} behavior="position">
         <ScrollView contentContainerStyle={styles.scrollView}>
           <Text style={styles.formTitle}>Login</Text>
-   
+
+          <CustomInput name={'Email'} onChange={(ev: string) => this.setState({ email: ev })}/>
+            <CustomInput name={'Password'} onChange={(ev: string) => this.setState({ password: ev })}/>
+
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Email</Text>
             <TextInput

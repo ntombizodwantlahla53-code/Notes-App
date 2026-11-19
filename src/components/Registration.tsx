@@ -3,13 +3,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect } from 'react';
 import * as NavigationBar from 'expo-navigation-bar';
+import CustomInput from '../../CustomInput';
 
 export default function Registration() {
-  const [firstName, setFirstName] = useState('')
+  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   
   useEffect(() => {
-    console.log(firstName);
-  }, [firstName])
+    console.log(username);
+  }, [username])
   const handleOnPress = () => {
     Alert.alert('Alert', 'Button was pressed', [
       { text: 'Okay', onPress: () => console.log('Okay was pressed') },
@@ -25,33 +28,10 @@ export default function Registration() {
       <KeyboardAvoidingView style={{flex: 1}} behavior="position">
         <ScrollView contentContainerStyle={styles.scrollView}>
           <Text style={styles.formTitle}>Register</Text>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Username</Text>
-            <TextInput
-              placeholder="Username"
-              style={styles.input}
-              placeholderTextColor={'#717171'}
-              onChangeText={(text) => { console.log(text) }}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              placeholder="Email"
-              style={styles.input}
-              placeholderTextColor={'#717171'}
-              onChangeText={(text) => { console.log(text) }}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Password</Text>
-            <TextInput
-              placeholder="Password"
-              style={styles.input}
-              placeholderTextColor={'#717171'}
-              onChangeText={(text) => { console.log(text) }}
-            />
-          </View>
+          
+          <CustomInput name={'User Name'} onChange={setUsername}/>
+          <CustomInput name={'Email'} onChange={setEmail}/>
+          <CustomInput name={'Password'} onChange={setPassword}/>
           
         </ScrollView>
       </KeyboardAvoidingView>
