@@ -8,7 +8,9 @@ export default function Home() {
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to Notes App</Text>
       <Text style={styles.message}>No notes added yet</Text>
-      <Pressable style={styles.button}>
+      <Pressable
+        style={styles.button}
+        onPress={() => router.push('/add-note')}>
         <Text style={styles.buttonText}>Add Notes</Text>
       </Pressable>
     </View>
