@@ -1,7 +1,7 @@
 # Welcome to your Expo app 👋
 # Notes-App
 
-<img src="https://socialify.git.ci/ntombizodwantlahla53-code/Library-API/image?language=1&owner=1&name=1&stargazers=1&theme=Light" alt="Library-API" width="640" height="320" />
+<img src="https://socialify.git.ci/ntombizodwantlahla53-code/Notes-App/image?language=1&owner=1&name=1&stargazers=1&theme=Light" alt="Notes-App" width="640" height="320" />
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
