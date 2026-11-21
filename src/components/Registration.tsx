@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
-import { Alert, KeyboardAvoidingView, ScrollView, StyleSheet, Text, ToastAndroid, Pressable, View } from 'react-native';
+import { useState } from 'react';
+import {Alert,KeyboardAvoidingView,ScrollView,StyleSheet,Text,Pressable,View} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 import CustomInput from './CustomInput';
 import { validateInput, ValidationResult } from '@/utils/input.validation';
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface User {
   username: string;
@@ -26,7 +27,6 @@ export default function Registration() {
       [stateName]: validateInput(type, value)
     }));
   };
-
   const handleOnSubmit = async () => {
     if (!username.trim() || !email.trim() || !password.trim()) {
       Alert.alert('Error', 'Please fill in all fields.');
@@ -34,43 +34,28 @@ export default function Registration() {
     }
 
     try {
-      // Get all registered users
       const savedUsers = await AsyncStorage.getItem('users');
-
-      // here we convert savedData into an array
       const users: User[] = savedUsers ? JSON.parse(savedUsers) : [];
-
-      // here we check if the email is already registered so that if its registered you do not reg..again with it
       const existingUser = users.find(
         user => user.email.toLowerCase() === email.trim().toLowerCase()
       );
-
       if (existingUser) {
         Alert.alert('Error', 'This email is already registered.');
         return;
       }
-
-      // create the new user
       const newUser: User = {
         username: username.trim(),
         email: email.trim().toLowerCase(),
         password: password
       };
-
-      // we add the new user to the array
       users.push(newUser);
-
-      // saving all users
       await AsyncStorage.setItem('users', JSON.stringify(users));
-
       Alert.alert('Success', 'Registration successful!');
-
-      // clearing the inputs i wrote
       setUsername('');
       setEmail('');
       setPassword('');
       setErrors({});
-
+      router.replace('/login');
     } catch (error) {
       Alert.alert('Error', 'Could not save registration details.');
       console.log(error);
@@ -88,7 +73,7 @@ export default function Registration() {
             onChange={setUsername}
             onBlur={() => handleInput('string', 'username', username)}
             error={errors.username?.error}
-          />
+/>
 
           <CustomInput
             name={'Email'}
@@ -112,7 +97,7 @@ export default function Registration() {
             <Text style={{ color: '#000000' }}>
               Already have an account?
             </Text>
-            <Pressable>
+            <Pressable onPress={() => router.push('/login')}>
               <Text style={{ color: '#1b6be8', padding: 5 }}>
                 Sign In
               </Text>
