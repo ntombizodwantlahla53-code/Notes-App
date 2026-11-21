@@ -9,11 +9,14 @@ import * as NavigationBar from 'expo-navigation-bar';
 import Registration from '@/components/Registration';
 import Login from '@/components/LoginClass';
 import CounterClass from '@/components/CounterClass';
+import { Stack } from 'expo-router';
 
 export default function TabLayout() {
   return (
-    <Registration/>
-    // <Login/>
-    // <CounterClass/>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="login" />
+      <Stack.Screen name="home" />
+    </Stack>
   );
 }
