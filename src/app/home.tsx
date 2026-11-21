@@ -1,50 +1,114 @@
 import { Component } from 'react';
 import {View,Text,Pressable,StyleSheet,ScrollView} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router } from 'expo-router';
+import { router ,useFocusEffect} from 'expo-router';
+import { useState, useEffect } from 'react';
+import { useCallback } from 'react';
 
+interface Note {
+  id: string;
+  title: string;
+  description: string;
+  email: string;
+}
 export default function Home() {
+  const [notes, setNotes] = useState<Note[]>([]);
+  const getNotes = async () => {
+    try {
+      const currentUserData = await AsyncStorage.getItem('currentUser');
+      if (!currentUserData) {
+        router.replace('/login');
+        return;
+      }
+      const currentUser = JSON.parse(currentUserData);
+      const savedNotes = await AsyncStorage.getItem('notes');
+      const allNotes: Note[] = savedNotes ? JSON.parse(savedNotes) : [];
+      const userNotes = allNotes.filter(
+        note => note.email === currentUser.email
+      );
+      setNotes(userNotes);
+    } catch (error) {
+      console.log('Error loading notes:', error);
+    }
+  };
+  useFocusEffect(
+    useCallback(() => {
+      getNotes();
+    }, [])
+  );
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Notes App</Text>
-      <Text style={styles.message}>No notes added yet</Text>
-      <Pressable
-        style={styles.button}
-        onPress={() => router.push('/add-note')}>
-        <Text style={styles.buttonText}>Add Notes</Text>
-      </Pressable>
-    </View>
+    <ScrollView style={styles.container}>
+      <View style={styles.content}>
+        <Text style={styles.title}>Welcome to Notes App</Text>
+        <Pressable
+          style={styles.button}
+          onPress={() => router.push('/add-note')}>
+          <Text style={styles.buttonText}>Add Notes</Text>
+        </Pressable>
+        {notes.length === 0 ? (
+          <Text style={styles.message}>No notes added yet</Text>
+        ) : (
+          notes.map(note => (
+            <View key={note.id} style={styles.noteCard}>
+              <Text style={styles.noteTitle}>{note.title}</Text>
+              <Text style={styles.noteDescription}>
+                {note.description}
+              </Text>
+            </View>
+          ))
+        )}
+      </View>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#010709',
-    justifyContent: 'center',
-    alignItems: 'center',
+  },
+  content: {
     padding: 20,
   },
   title: {
     color: '#ffffff',
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 30,
+    marginBottom: 25,
   },
   message: {
     color: '#BDBDDB',
     fontSize: 16,
-    marginBottom: 20,
+    textAlign: 'center',
+    marginTop: 40,
   },
   button: {
     backgroundColor: '#306A68',
     padding: 14,
     borderRadius: 8,
-    width: '100%',
     alignItems: 'center',
+    marginBottom: 25,
   },
   buttonText: {
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  noteCard: {
+    backgroundColor: '#121c24',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#306A68',
+  },
+  noteTitle: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  noteDescription: {
+    color: '#BDBDDB',
+    fontSize: 15,
   },
 });
