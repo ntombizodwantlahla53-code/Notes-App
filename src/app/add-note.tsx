@@ -5,16 +5,19 @@ import { router } from 'expo-router';
 
 interface Note {
   id: string;
-  title: string;
-  description: string;
+  title?: string;
+  notes: string;
+  category: string;
+  dateAdded: string;
   email: string;
 }
 export default function AddNote() {
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [notes, setNotes] = useState('');
+  const [category, setCategory] = useState('');
   const handleSaveNote = async () => {
-    if (!title.trim() || !description.trim()) {
-      Alert.alert('Error', 'Please enter a note and description.');
+    if (!notes.trim() || !category.trim()) {
+      Alert.alert('Error', 'Please enter your notes and category.');
       return;
     }
     try {
@@ -25,18 +28,20 @@ export default function AddNote() {
       }
       const currentUser = JSON.parse(currentUserData);
       const savedNotes = await AsyncStorage.getItem('notes');
-      const notes: Note[] = savedNotes ? JSON.parse(savedNotes) : [];
+      const allNotes: Note[] = savedNotes ? JSON.parse(savedNotes) : [];
       const newNote: Note = {
         id: Date.now().toString(),
-        title: title,
-        description: description,
+        title: title.trim(),
+        notes: notes.trim(),
+        category: category.trim(),
+        dateAdded: new Date().toISOString(),
         email: currentUser.email
       };
-
-      notes.push(newNote);
-      await AsyncStorage.setItem('notes', JSON.stringify(notes));
-      Alert.alert('Success', 'Note saved successfully.');
+      allNotes.push(newNote);
+      await AsyncStorage.setItem('notes', JSON.stringify(allNotes));
+      Alert.alert('Success', 'Note saved successfully!');
       router.replace('/home');
+
     } catch (error) {
       Alert.alert('Error', 'Could not save your note.');
       console.log(error);
@@ -45,21 +50,30 @@ export default function AddNote() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Add Notes</Text>
-      <Text style={styles.label}>Note</Text>
+      <Text style={styles.label}>Title (Optional)</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter note title"
+        placeholder="Enter title"
         placeholderTextColor="#717171"
         value={title}
         onChangeText={setTitle}/>
-      <Text style={styles.label}>Description</Text>
+
+      <Text style={styles.label}>Notes</Text>
       <TextInput
         style={styles.description}
-        placeholder="Enter note description"
+        placeholder="Write your notes here"
         placeholderTextColor="#717171"
         multiline
-        value={description}
-        onChangeText={setDescription}/>
+        value={notes}
+        onChangeText={setNotes}/>
+
+      <Text style={styles.label}>Category</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter category"
+        placeholderTextColor="#717171"
+        value={category}
+        onChangeText={setCategory}/>
 
       <Pressable style={styles.button} onPress={handleSaveNote}>
         <Text style={styles.buttonText}>Save Note</Text>

@@ -7,8 +7,10 @@ import { useCallback } from 'react';
 
 interface Note {
   id: string;
-  title: string;
-  description: string;
+  title?: string;
+  notes: string;
+  category: string;
+  dateAdded: string;
   email: string;
 }
 export default function Home() {
@@ -42,7 +44,8 @@ export default function Home() {
         <Text style={styles.title}>Welcome to Notes App</Text>
         <Pressable
           style={styles.button}
-          onPress={() => router.push('/add-note')}>
+          onPress={() => router.push('/add-note')}
+        >
           <Text style={styles.buttonText}>Add Notes</Text>
         </Pressable>
         {notes.length === 0 ? (
@@ -50,9 +53,18 @@ export default function Home() {
         ) : (
           notes.map(note => (
             <View key={note.id} style={styles.noteCard}>
-              <Text style={styles.noteTitle}>{note.title}</Text>
-              <Text style={styles.noteDescription}>
-                {note.description}
+              {note.title ? (
+                <Text style={styles.noteTitle}>{note.title}</Text>
+              ) : null}
+
+              <Text style={styles.noteDescription}>{note.notes}</Text>
+
+              <Text style={styles.noteDetails}>
+                Category: {note.category}
+              </Text>
+
+              <Text style={styles.noteDetails}>
+                Date added: {new Date(note.dateAdded).toLocaleDateString()}
               </Text>
             </View>
           ))
@@ -108,7 +120,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   noteDescription: {
-    color: '#BDBDDB',
+    color: '#ffffff',
     fontSize: 15,
+    marginBottom: 12,
+  },
+  noteDetails: {
+    color: '#BDBDDB',
+    fontSize: 13,
+    marginTop: 5,
   },
 });
