@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import {View,Text,Pressable,StyleSheet,ScrollView,Alert} from 'react-native';
+import {View,Text,Pressable,StyleSheet,ScrollView,Alert, TextInput} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router ,useFocusEffect} from 'expo-router';
 import { useState, useEffect } from 'react';
@@ -16,6 +16,7 @@ interface Note {
 }
 export default function Home() {
   const [notes, setNotes] = useState<Note[]>([]);
+  const [searchText, setSearchText] = useState('');
   const [sortOrder, setSortOrder] = useState<'ascending' | 'descending'>('descending');
   const getNotes = async () => {
     try {
@@ -76,7 +77,20 @@ export default function Home() {
       ]
     );
   };
-  const sortedNotes = [...notes].sort((firstNote, secondNote) => {
+
+  const filteredNotes = notes.filter(note => {
+    const searchWords = searchText.toLowerCase().trim().split(/\s+/);
+
+    const noteContent = [
+      note.title || '',
+      note.notes,
+      note.category
+    ].join(' ').toLowerCase();
+
+    return searchWords.every(word => noteContent.includes(word));
+  });
+
+  const sortedNotes = [...filteredNotes].sort((firstNote, secondNote) => {
     const firstDate = new Date(firstNote.dateAdded).getTime();
     const secondDate = new Date(secondNote.dateAdded).getTime();
     if (sortOrder === 'ascending') {
@@ -101,27 +115,39 @@ export default function Home() {
           <Text style={styles.buttonText}>Add Notes</Text>
         </Pressable>
         {notes.length > 0 && (
-          <View style={styles.sortSection}>
-            <Text style={styles.sortTitle}>Sort by Date Added</Text>
-            <View style={styles.sortButtons}>
-              <Pressable
-                style={[ styles.sortButton, sortOrder === 'ascending' && styles.activeSortButton
-                ]}
-                onPress={() => setSortOrder('ascending')}>
-                <Text style={styles.sortButtonText}>Oldest First</Text>
-              </Pressable>
+          <>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search your notes..."
+              placeholderTextColor="#BDBDDB"
+              value={searchText}
+              onChangeText={setSearchText}/>
 
-              <Pressable
-                style={[styles.sortButton, sortOrder === 'descending' && styles.activeSortButton
-                ]}
-                onPress={() => setSortOrder('descending')}>
-                <Text style={styles.sortButtonText}>Newest First</Text>
-              </Pressable>
+            <View style={styles.sortSection}>
+              <Text style={styles.sortTitle}>Sort by Date Added</Text>
+
+              <View style={styles.sortButtons}>
+                <Pressable style={[ styles.sortButton,
+                    sortOrder === 'ascending' && styles.activeSortButton
+                  ]}
+                  onPress={() => setSortOrder('ascending')}>
+                  <Text style={styles.sortButtonText}>Oldest First</Text>
+                </Pressable>
+
+                <Pressable style={[ styles.sortButton,
+                    sortOrder === 'descending' && styles.activeSortButton
+                  ]}
+                  onPress={() => setSortOrder('descending')}>
+                  <Text style={styles.sortButtonText}>Newest First</Text>
+                </Pressable>
+              </View>
             </View>
-          </View>
+          </>
         )}
         {notes.length === 0 ? (
           <Text style={styles.message}>No notes added yet</Text>
+        ) : sortedNotes.length === 0 ? (
+          <Text style={styles.message}>No matching notes found.</Text>
         ) : (
           sortedNotes.map(note => (
             <View key={note.id} style={styles.noteCard}>
@@ -148,9 +174,7 @@ export default function Home() {
                   router.push({
                     pathname: '/view-note',
                     params: { id: note.id }
-                  })
-                }
-              >
+                  })}>
                 <Text style={styles.viewButtonText}>View</Text>
               </Pressable>
 
@@ -158,17 +182,14 @@ export default function Home() {
                 style={styles.editButton}
                 onPress={() =>
                   router.push({
-                    pathname: '/edit-note',
+                    pathname: '/add-note',
                     params: { id: note.id }
-                  })
-                }
-              >
+                  })}>
                 <Text style={styles.editButtonText}>Edit</Text>
               </Pressable>
               <Pressable
                 style={styles.deleteButton}
-                onPress={() => handleDeleteNote(note.id)}
-              >
+                onPress={() => handleDeleteNote(note.id)}>
                 <Text style={styles.deleteButtonText}>Delete</Text>
               </Pressable>
             </View>
@@ -192,12 +213,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 25,
   },
-  message: {
-    color: '#BDBDDB',
-    fontSize: 16,
-    textAlign: 'center',
-    marginTop: 40,
-  },
   button: {
     backgroundColor: '#306A68',
     padding: 14,
@@ -209,6 +224,15 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  searchInput: {
+    backgroundColor: '#121c24',
+    color: '#ffffff',
+    padding: 14,
+    borderRadius: 8,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#306A68',
   },
   sortSection: {
     marginBottom: 20,
@@ -238,6 +262,12 @@ const styles = StyleSheet.create({
   sortButtonText: {
     color: '#ffffff',
     fontWeight: 'bold',
+  },
+  message: {
+    color: '#BDBDDB',
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 40,
   },
   noteCard: {
     backgroundColor: '#121c24',
