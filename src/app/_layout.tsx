@@ -17,6 +17,7 @@ export default function TabLayout() {
       <Stack.Screen name="index" />
       <Stack.Screen name="login" />
       <Stack.Screen name="home" />
+      <Stack.Screen name="view-note" />
     </Stack>
   );
 }

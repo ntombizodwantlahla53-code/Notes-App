@@ -66,6 +66,10 @@ export default function Home() {
               <Text style={styles.noteDetails}>
                 Date added: {new Date(note.dateAdded).toLocaleDateString()}
               </Text>
+              <Pressable style={styles.viewButton} 
+              onPress={() => router.push({ pathname: '/view-note', params: { id: note.id }})}>
+                <Text style={styles.viewButtonText}>View</Text>
+                </Pressable>
             </View>
           ))
         )}
@@ -129,4 +133,15 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 5,
   },
+  viewButton: {
+  backgroundColor: '#306A68',
+  padding: 10,
+  borderRadius: 6,
+  alignItems: 'center',
+  marginTop: 12,
+},
+viewButtonText: {
+  color: '#ffffff',
+  fontWeight: 'bold',
+},
 });
