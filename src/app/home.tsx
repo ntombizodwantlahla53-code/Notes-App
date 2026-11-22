@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import {View,Text,Pressable,StyleSheet,ScrollView} from 'react-native';
+import {View,Text,Pressable,StyleSheet,ScrollView,Alert} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router ,useFocusEffect} from 'expo-router';
 import { useState, useEffect } from 'react';
@@ -33,6 +33,47 @@ export default function Home() {
       console.log('Error loading notes:', error);
     }
   };
+  const handleDeleteNote = (noteId: string) => {
+    Alert.alert(
+      'Delete Note',
+      'Are you sure you want to delete this note?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const currentUserData = await AsyncStorage.getItem('currentUser');
+              if (!currentUserData) {
+                router.replace('/login');
+                return;
+              }
+              const currentUser = JSON.parse(currentUserData);
+              const savedNotes = await AsyncStorage.getItem('notes');
+              const allNotes: Note[] = savedNotes
+                ? JSON.parse(savedNotes)
+                : [];
+              const updatedNotes = allNotes.filter(
+                note => !(note.id === noteId && note.email === currentUser.email)
+              );
+              await AsyncStorage.setItem('notes', JSON.stringify(updatedNotes));
+              setNotes(previousNotes =>
+                previousNotes.filter(note => note.id !== noteId)
+              );
+              Alert.alert('Success', 'Note deleted successfully.');
+            } catch (error) {
+              Alert.alert('Error', 'Could not delete the note.');
+              console.log(error);
+            }
+          },
+        },
+      ]
+    );
+  };
   useFocusEffect(
     useCallback(() => {
       getNotes();
@@ -56,9 +97,7 @@ export default function Home() {
               {note.title ? (
                 <Text style={styles.noteTitle}>{note.title}</Text>
               ) : null}
-
               <Text style={styles.noteDescription}>{note.notes}</Text>
-
               <Text style={styles.noteDetails}>
                 Category: {note.category}
               </Text>
@@ -66,10 +105,20 @@ export default function Home() {
               <Text style={styles.noteDetails}>
                 Date added: {new Date(note.dateAdded).toLocaleDateString()}
               </Text>
-              <Pressable style={styles.viewButton} 
-              onPress={() => router.push({ pathname: '/view-note', params: { id: note.id }})}>
+              <Pressable
+                style={styles.viewButton}
+                onPress={() =>
+                  router.push({
+                    pathname: '/view-note',
+                    params: { id: note.id }
+                  })}>
                 <Text style={styles.viewButtonText}>View</Text>
-                </Pressable>
+              </Pressable>
+              <Pressable
+                style={styles.deleteButton}
+                onPress={() => handleDeleteNote(note.id)}>
+                <Text style={styles.deleteButtonText}>Delete</Text>
+              </Pressable>
             </View>
           ))
         )}
@@ -134,14 +183,25 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   viewButton: {
-  backgroundColor: '#306A68',
-  padding: 10,
-  borderRadius: 6,
-  alignItems: 'center',
-  marginTop: 12,
-},
-viewButtonText: {
-  color: '#ffffff',
-  fontWeight: 'bold',
-},
+    backgroundColor: '#306A68',
+    padding: 10,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  viewButtonText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+  },
+  deleteButton: {
+    backgroundColor: '#8B3030',
+    padding: 10,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  deleteButtonText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+  },
 });
