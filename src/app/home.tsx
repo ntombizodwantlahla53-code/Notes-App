@@ -16,6 +16,7 @@ interface Note {
 }
 export default function Home() {
   const [notes, setNotes] = useState<Note[]>([]);
+  const [sortOrder, setSortOrder] = useState<'ascending' | 'descending'>('descending');
   const getNotes = async () => {
     try {
       const currentUserData = await AsyncStorage.getItem('currentUser');
@@ -75,6 +76,15 @@ export default function Home() {
       ]
     );
   };
+  const sortedNotes = [...notes].sort((firstNote, secondNote) => {
+    const firstDate = new Date(firstNote.dateAdded).getTime();
+    const secondDate = new Date(secondNote.dateAdded).getTime();
+    if (sortOrder === 'ascending') {
+      return firstDate - secondDate;
+    }
+    return secondDate - firstDate;
+  });
+
   useFocusEffect(
     useCallback(() => {
       getNotes();
@@ -90,10 +100,30 @@ export default function Home() {
         >
           <Text style={styles.buttonText}>Add Notes</Text>
         </Pressable>
+        {notes.length > 0 && (
+          <View style={styles.sortSection}>
+            <Text style={styles.sortTitle}>Sort by Date Added</Text>
+            <View style={styles.sortButtons}>
+              <Pressable
+                style={[ styles.sortButton, sortOrder === 'ascending' && styles.activeSortButton
+                ]}
+                onPress={() => setSortOrder('ascending')}>
+                <Text style={styles.sortButtonText}>Oldest First</Text>
+              </Pressable>
+
+              <Pressable
+                style={[styles.sortButton, sortOrder === 'descending' && styles.activeSortButton
+                ]}
+                onPress={() => setSortOrder('descending')}>
+                <Text style={styles.sortButtonText}>Newest First</Text>
+              </Pressable>
+            </View>
+          </View>
+        )}
         {notes.length === 0 ? (
           <Text style={styles.message}>No notes added yet</Text>
         ) : (
-          notes.map(note => (
+          sortedNotes.map(note => (
             <View key={note.id} style={styles.noteCard}>
               {note.title ? (
                 <Text style={styles.noteTitle}>{note.title}</Text>
@@ -118,22 +148,27 @@ export default function Home() {
                   router.push({
                     pathname: '/view-note',
                     params: { id: note.id }
-                  })}>
+                  })
+                }
+              >
                 <Text style={styles.viewButtonText}>View</Text>
               </Pressable>
 
               <Pressable
                 style={styles.editButton}
                 onPress={() =>
-                  router.push({ 
-                    pathname: '/edit-note', 
+                  router.push({
+                    pathname: '/edit-note',
                     params: { id: note.id }
-                  })}>
+                  })
+                }
+              >
                 <Text style={styles.editButtonText}>Edit</Text>
               </Pressable>
               <Pressable
                 style={styles.deleteButton}
-                onPress={() => handleDeleteNote(note.id)}>
+                onPress={() => handleDeleteNote(note.id)}
+              >
                 <Text style={styles.deleteButtonText}>Delete</Text>
               </Pressable>
             </View>
@@ -173,6 +208,35 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#ffffff',
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+  sortSection: {
+    marginBottom: 20,
+  },
+  sortTitle: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  sortButtons: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  sortButton: {
+    flex: 1,
+    backgroundColor: '#121c24',
+    padding: 12,
+    borderRadius: 6,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#306A68',
+  },
+  activeSortButton: {
+    backgroundColor: '#306A68',
+  },
+  sortButtonText: {
+    color: '#ffffff',
     fontWeight: 'bold',
   },
   noteCard: {
