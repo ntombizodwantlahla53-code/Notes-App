@@ -9,6 +9,7 @@ interface Note {
   notes: string;
   category: string;
   dateAdded: string;
+  dateUpdated?: string;
   email: string;
 }
 export default function ViewNote() {
@@ -64,8 +65,16 @@ export default function ViewNote() {
       <Text style={styles.text}>{note.category}</Text>
       <Text style={styles.label}>Date Added</Text>
       <Text style={styles.text}>
-        {new Date(note.dateAdded).toLocaleDateString()}
+        {new Date(note.dateAdded).toLocaleString()}
       </Text>
+      {note.dateUpdated ? (
+        <>
+          <Text style={styles.label}>Last Updated</Text>
+          <Text style={styles.text}>
+            {new Date(note.dateUpdated).toLocaleString()}
+          </Text>
+        </>
+      ) : null}
     </View>
   );
 }

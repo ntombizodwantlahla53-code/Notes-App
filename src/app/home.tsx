@@ -11,6 +11,7 @@ interface Note {
   notes: string;
   category: string;
   dateAdded: string;
+  dateUpdated?: string;
   email: string;
 }
 export default function Home() {
@@ -105,6 +106,12 @@ export default function Home() {
               <Text style={styles.noteDetails}>
                 Date added: {new Date(note.dateAdded).toLocaleDateString()}
               </Text>
+              {note.dateUpdated ? (
+                <Text style={styles.noteDetails}>
+                  Last updated: {new Date(note.dateUpdated).toLocaleString()}
+                </Text>
+              ) : null}
+
               <Pressable
                 style={styles.viewButton}
                 onPress={() =>
@@ -113,6 +120,16 @@ export default function Home() {
                     params: { id: note.id }
                   })}>
                 <Text style={styles.viewButtonText}>View</Text>
+              </Pressable>
+
+              <Pressable
+                style={styles.editButton}
+                onPress={() =>
+                  router.push({ 
+                    pathname: '/edit-note', 
+                    params: { id: note.id }
+                  })}>
+                <Text style={styles.editButtonText}>Edit</Text>
               </Pressable>
               <Pressable
                 style={styles.deleteButton}
@@ -190,6 +207,17 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   viewButtonText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+  },
+  editButton: {
+    backgroundColor: '#455A64',
+    padding: 10,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  editButtonText: {
     color: '#ffffff',
     fontWeight: 'bold',
   },
